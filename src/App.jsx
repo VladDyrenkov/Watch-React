@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useState } from "react";
 import { Timer } from "./Components/Timer/Timer";
+import {interval} from 'rxjs'
 
 function App() {
   const initialTime = {
@@ -14,6 +15,10 @@ function App() {
   const [time, setTime] = useState(initialTime);
   const [interva, setNewInterval] = useState();
   const [isCount, setCountingStatus] = useState(false);
+  
+  const stopBtn = document.getElementById('stop');
+  const resetBtn = document.getElementById('reset');
+  const waitBtn = document.getElementById('wait');
 
   let initiatedSeconds = time.seconds;
   let initiatedMinutes = time.minutes;
@@ -46,7 +51,33 @@ function App() {
   const startCounting = () => {
     start();
     setCountingStatus(true);
-    setNewInterval(setInterval(start, 1000))
+    const newInterval = interval(1000);
+    const stream$ = newInterval.subscribe(start)
+    setNewInterval(stream$);
+
+    stopBtn.addEventListener('click', () => {
+      stream$.unsubscribe();
+    })
+
+    resetBtn.addEventListener('click', () => {
+      stream$.unsubscribe();
+    })
+
+    waitBtn.addEventListener('click', () => {
+      clicCounter++;
+
+    if (clicCounter === 1) {
+      setTimeout(() => clicCounter = 0, 300);
+    }
+
+    if (clicCounter === 2) {
+      clearInterval(interva);
+      setCountingStatus(false);
+      stream$.unsubscribe();
+
+      clicCounter = 0;
+    }
+    })
   }
 
   const stopCounting = () => {
@@ -97,6 +128,7 @@ function App() {
           type="button"
           onClick={stopCounting}
           className="Watch__button"
+          id='stop'
         >
           Stop
         </button>
@@ -104,6 +136,7 @@ function App() {
           type="button"
           onClick={waitCounting}
           className="Watch__button"
+          id='wait'
         >
           Wait
         </button>
@@ -111,6 +144,7 @@ function App() {
           type="button"
           onClick={resetCounting}
           className="Watch__button"
+          id='reset'
         >
           Reset
         </button>
