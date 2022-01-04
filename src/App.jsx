@@ -13,12 +13,7 @@ function App() {
   let clicCounter = 0;
   
   const [time, setTime] = useState(initialTime);
-  const [interva, setNewInterval] = useState();
   const [isCount, setCountingStatus] = useState(false);
-  
-  const stopBtn = document.getElementById('stop');
-  const resetBtn = document.getElementById('reset');
-  const waitBtn = document.getElementById('wait');
 
   let initiatedSeconds = time.seconds;
   let initiatedMinutes = time.minutes;
@@ -53,36 +48,32 @@ function App() {
     setCountingStatus(true);
     const newInterval = interval(1000);
     const stream$ = newInterval.subscribe(start)
-    setNewInterval(stream$);
 
-    stopBtn.addEventListener('click', () => {
+    document.getElementById('stop').addEventListener('click', () => {
       stream$.unsubscribe();
+      console.log('res')
     })
 
-    resetBtn.addEventListener('click', () => {
+    document.getElementById('reset').addEventListener('click', () => {
       stream$.unsubscribe();
+      console.log('res')
     })
 
-    waitBtn.addEventListener('click', () => {
+    document.getElementById('wait').addEventListener('click', () => {
       clicCounter++;
-
-    if (clicCounter === 1) {
-      setTimeout(() => clicCounter = 0, 300);
-    }
-
-    if (clicCounter === 2) {
-      clearInterval(interva);
-      setCountingStatus(false);
-      stream$.unsubscribe();
-
-      clicCounter = 0;
-    }
+      if (clicCounter === 1) {
+        setTimeout(() => clicCounter = 0, 300);
+      }
+  
+      if (clicCounter === 2) {
+        stream$.unsubscribe() 
+        clicCounter = 0;
+      }
     })
   }
 
   const stopCounting = () => {
     setTime({ ...initialTime });
-    clearInterval(interva);
     setCountingStatus(false);
   };
 
@@ -94,7 +85,6 @@ function App() {
     }
 
     if (clicCounter === 2) {
-      clearInterval(interva);
       setCountingStatus(false);
 
       clicCounter = 0;
